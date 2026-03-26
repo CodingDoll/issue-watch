@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(./bin/doll.js --help)",
+      "Bash(./bin/doll.js list:*)",
+      "Bash(./bin/doll.js show:*)",
+      "Bash(grep -v '^$')",
+      "Bash(pnpm add:*)",
+      "Bash(node:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm dev:*)"
+    ]
+  }
+}

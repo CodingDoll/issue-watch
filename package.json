@@ -1,0 +1,44 @@
+{
+  "name": "doll-cli",
+  "version": "1.0.0",
+  "description": "A CLI tool for viewing GitHub issues",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "doll": "./bin/doll.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "scheduler": "node dist/scheduler.js",
+    "scheduler:cron": "node dist/scheduler.js --cron"
+  },
+  "keywords": [
+    "github",
+    "issues",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.32.1",
+  "dependencies": {
+    "@inquirer/prompts": "^8.3.2",
+    "chalk": "^5.4.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^13.0.0",
+    "dotenv": "^17.3.1",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^8.0.3",
+    "octokit": "^4.1.0",
+    "open": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^7.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
