@@ -20,12 +20,11 @@ export interface LastCommandArgs {
   repo?: string;
   state?: string;
   limit?: number;
-  format?: string;
   labels?: string;
   timestamp: string;
 }
 
-const STATE_DIR = join(homedir(), '.doll-cli');
+const STATE_DIR = join(homedir(), '.issuewatch');
 const STATE_FILE = join(STATE_DIR, 'state.json');
 const ARGS_FILE = join(STATE_DIR, 'last-args.json');
 
@@ -212,7 +211,6 @@ export function mergeWithLastArgs(
       repo,
       state: options.state,
       limit: options.limit,
-      format: options.format,
       labels: options.labels,
       timestamp: new Date().toISOString(),
     };
@@ -230,7 +228,6 @@ export function mergeWithLastArgs(
         ...options,
         state: options.state || lastArgs.state,
         limit: options.limit || lastArgs.limit,
-        format: options.format || lastArgs.format,
         labels: options.labels || lastArgs.labels,
       },
     };

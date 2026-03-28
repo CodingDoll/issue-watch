@@ -8,7 +8,6 @@ describe('getConfig', () => {
         delete process.env.GITHUB_TOKEN;
         delete process.env.DOLL_DEFAULT_STATE;
         delete process.env.DOLL_DEFAULT_LIMIT;
-        delete process.env.DOLL_DEFAULT_FORMAT;
     });
     afterEach(() => {
         process.env = originalEnv;
@@ -18,7 +17,6 @@ describe('getConfig', () => {
         expect(config.token).toBe('');
         expect(config.defaultState).toBe('open');
         expect(config.defaultLimit).toBe(30);
-        expect(config.defaultFormat).toBe('table');
     });
     it('should use CLI token when provided', () => {
         const config = getConfig('cli-token-123');
@@ -43,11 +41,6 @@ describe('getConfig', () => {
         process.env.DOLL_DEFAULT_LIMIT = '50';
         const config = getConfig();
         expect(config.defaultLimit).toBe(50);
-    });
-    it('should use DOLL_DEFAULT_FORMAT env var', () => {
-        process.env.DOLL_DEFAULT_FORMAT = 'json';
-        const config = getConfig();
-        expect(config.defaultFormat).toBe('json');
     });
     it('should handle invalid DOLL_DEFAULT_LIMIT gracefully', () => {
         process.env.DOLL_DEFAULT_LIMIT = 'invalid';

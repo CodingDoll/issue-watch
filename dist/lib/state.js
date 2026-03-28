@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
-const STATE_DIR = join(homedir(), '.doll-cli');
+const STATE_DIR = join(homedir(), '.issuewatch');
 const STATE_FILE = join(STATE_DIR, 'state.json');
 const ARGS_FILE = join(STATE_DIR, 'last-args.json');
 // Maximum number of issues to track per repository (LRU cache size)
@@ -154,7 +154,6 @@ export function mergeWithLastArgs(owner, repo, options) {
             repo,
             state: options.state,
             limit: options.limit,
-            format: options.format,
             labels: options.labels,
             timestamp: new Date().toISOString(),
         };
@@ -171,7 +170,6 @@ export function mergeWithLastArgs(owner, repo, options) {
                 ...options,
                 state: options.state || lastArgs.state,
                 limit: options.limit || lastArgs.limit,
-                format: options.format || lastArgs.format,
                 labels: options.labels || lastArgs.labels,
             },
         };

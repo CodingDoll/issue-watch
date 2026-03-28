@@ -5,7 +5,6 @@ export function getConfig(cliToken) {
         token,
         defaultState: process.env.DOLL_DEFAULT_STATE || 'open',
         defaultLimit: parseInt(process.env.DOLL_DEFAULT_LIMIT || '30', 10),
-        defaultFormat: process.env.DOLL_DEFAULT_FORMAT || 'table',
     };
 }
 export function validateToken(token) {

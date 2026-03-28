@@ -2,8 +2,7 @@ import { Command } from "commander";
 import chalk from "chalk";
 import { getConfig, validateToken } from "../lib/config.js";
 import { GitHubClient, type Issue } from "../lib/github.js";
-import { formatIssues, OutputFormat, ReadStatusMap } from "../lib/formatter.js";
-import { AISummarizer, getAIConfig } from "../lib/ai.js";
+import { formatIssues, type ReadStatusMap } from "../lib/formatter.js";
 import {
   markAsRead,
   isRead,
@@ -23,22 +22,9 @@ export function createListCommand(): Command {
     .option("-t, --token <token>", "GitHub personal access token")
     .option("-s, --state <state>", "Filter by state: open, closed, all", "open")
     .option("-l, --limit <number>", "Number of issues to fetch", "30")
-    .option(
-      "-f, --format <format>",
-      "Output format: table, json, simple",
-      "simple",
-    )
     .option("-i, --interactive", "Enable interactive mode (press Enter to open URL)", true)
     .option("--labels <labels>", "Filter by labels (comma-separated)", "")
     .option("--unassigned", "Filter for issues without assignee", true)
-    .option(
-      "--ai-summary",
-      "Enable AI summarization for each issue (requires AI config)",
-    )
-    .option(
-      "--ai-categorize",
-      "Enable AI categorization of issues (requires AI config)",
-    )
     // Read/Unread options
     .option("--read", "Filter to show only read issues")
     .option("--unread", "Filter to show only unread issues")
@@ -62,7 +48,6 @@ export function createListCommand(): Command {
         const client = new GitHubClient(config);
         const state = options.state as "open" | "closed" | "all";
         const limit = parseInt(options.limit, 10);
-        const format = options.format as OutputFormat;
         const labels = options.labels || undefined;
 
         // Handle clear-marks option first
@@ -82,10 +67,6 @@ export function createListCommand(): Command {
           process.exit(1);
         }
 
-        if (!["table", "json", "simple"].includes(format)) {
-          console.error("Error: Format must be one of: table, json, simple");
-          process.exit(1);
-        }
 
         let issues = await client.listIssues(owner, repo, state, limit, labels);
 
@@ -123,73 +104,8 @@ export function createListCommand(): Command {
           return aIsRead ? 1 : -1;
         });
 
-        // AI Features
-        const aiConfig = getAIConfig();
-        const aiSummarizer = aiConfig ? new AISummarizer(aiConfig) : null;
-
-        if (options.aiSummary || options.aiCategorize) {
-          if (!aiSummarizer) {
-            console.error(
-              "Error: AI features require AI_URL and AI_TOKEN environment variables",
-            );
-            console.error(
-              "Set AI_URL, AI_TOKEN, and optionally AI_MODEL environment variables",
-            );
-            process.exit(1);
-          }
-        }
-
-        // AI Categorization
-        if (options.aiCategorize) {
-          console.log("Categorizing issues with AI...\n");
-          const categories = await aiSummarizer!.categorizeIssues(issues);
-
-          for (const [category, categoryIssues] of Object.entries(categories)) {
-            if (categoryIssues.length > 0) {
-              console.log(`\n${"=".repeat(60)}`);
-              console.log(`📁 ${category} (${categoryIssues.length} issues)`);
-              console.log(`${"=".repeat(60)}`);
-
-              if (options.aiSummary) {
-                for (const issue of categoryIssues) {
-                  console.log(`\n📋 #${issue.number}: ${issue.title}`);
-                  try {
-                    const summary = await aiSummarizer!.summarizeIssue(issue);
-                    console.log(`   📝 Summary: ${summary}`);
-                  } catch (err: any) {
-                    console.log(
-                      `   📝 Summary: (failed to generate) - ${err.message}`,
-                    );
-                  }
-                }
-              } else {
-                const output = formatIssues(categoryIssues, "simple", undefined, readStatus);
-                console.log(output);
-              }
-            }
-          }
-          return;
-        }
-
-        // AI Summary (without categorization)
-        if (options.aiSummary) {
-          console.log("Generating AI summaries...\n");
-          for (const issue of issues) {
-            console.log(`\n📋 #${issue.number}: ${issue.title}`);
-            try {
-              const summary = await aiSummarizer!.summarizeIssue(issue);
-              console.log(`   📝 Summary: ${summary}`);
-            } catch (err: any) {
-              console.log(
-                `   📝 Summary: (failed to generate) - ${err.message}`,
-              );
-            }
-          }
-          return;
-        }
-
-        // Standard output (no AI)
-        const output = formatIssues(issues, format, `${owner}/${repo}`, readStatus);
+        // Output issues
+        const output = formatIssues(issues, readStatus);
         console.log(output);
 
         // Interactive mode: use vim-style navigation
@@ -197,7 +113,6 @@ export function createListCommand(): Command {
           const navigator = new InteractiveListNavigator(issues, {
             owner,
             repo,
-            format: format as OutputFormat,
             readStatus,
             onMarkAsRead: (issueNumber: number) => {
               markAsRead(owner, repo, issueNumber);

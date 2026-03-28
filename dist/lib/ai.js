@@ -93,43 +93,6 @@ Respond with only the category name (Bug, Feature, Documentation, or Other).`;
             return 'Other';
         }
     }
-    async summarizeIssueChinese(issue) {
-        const prompt = this.buildChinesePrompt(issue);
-        try {
-            const response = await fetch(this.config.url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.config.token}`,
-                },
-                body: JSON.stringify({
-                    model: this.config.model,
-                    messages: [
-                        {
-                            role: 'system',
-                            content: '你是一个技术专家，擅长分析GitHub Issue并提炼关键信息。请用简洁的中文总结问题的核心和紧急程度。',
-                        },
-                        {
-                            role: 'user',
-                            content: prompt,
-                        },
-                    ],
-                    max_tokens: 150,
-                }),
-            });
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(`AI API error: ${response.status} - ${error}`);
-            }
-            const data = await response.json();
-            const summary = data.choices?.[0]?.message?.content?.trim() || '无法生成摘要';
-            // Ensure summary is under 100 characters
-            return summary.length > 100 ? summary.substring(0, 97) + '...' : summary;
-        }
-        catch (error) {
-            throw new Error(`Failed to summarize issue in Chinese: ${error.message}`);
-        }
-    }
     buildPrompt(issue) {
         return `Please summarize this GitHub issue in 2-3 sentences:
 
@@ -143,20 +106,6 @@ Key Details:
 - State: ${issue.state}
 - Author: @${issue.user.login}
 - Labels: ${issue.labels.map(l => l.name).join(', ') || 'None'}`;
-    }
-    buildChinesePrompt(issue) {
-        return `请分析以下GitHub Issue，用不超过100字的中文总结核心问题和紧急程度：
-
-标题: ${issue.title}
-
-描述:
-${issue.body || '无描述'}
-
-关键信息:
-- Issue编号: #${issue.number}
-- 状态: ${issue.state}
-- 作者: @${issue.user.login}
-- 标签: ${issue.labels.map(l => l.name).join(', ') || '无'}`;
     }
 }
 export function getAIConfig() {

@@ -14,21 +14,29 @@ import { existsSync, unlinkSync, rmdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 
-const TEST_STATE_DIR = join(homedir(), '.doll-cli');
+const TEST_STATE_DIR = join(homedir(), '.issuewatch');
 const TEST_STATE_FILE = join(TEST_STATE_DIR, 'state.json');
+const OLD_STATE_DIR = join(homedir(), '.doll-cli');
+const OLD_STATE_FILE = join(OLD_STATE_DIR, 'state.json');
 
 describe('state module', () => {
   beforeEach(() => {
-    // Clean up any existing state before each test
+    // Clean up any existing state before each test (both old and new paths)
     if (existsSync(TEST_STATE_FILE)) {
       unlinkSync(TEST_STATE_FILE);
+    }
+    if (existsSync(OLD_STATE_FILE)) {
+      unlinkSync(OLD_STATE_FILE);
     }
   });
 
   afterEach(() => {
-    // Clean up after tests
+    // Clean up after tests (both old and new paths)
     if (existsSync(TEST_STATE_FILE)) {
       unlinkSync(TEST_STATE_FILE);
+    }
+    if (existsSync(OLD_STATE_FILE)) {
+      unlinkSync(OLD_STATE_FILE);
     }
   });
 

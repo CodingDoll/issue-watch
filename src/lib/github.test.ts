@@ -22,7 +22,6 @@ const mockConfig: Config = {
   token: 'test-token',
   defaultState: 'open',
   defaultLimit: 30,
-  defaultFormat: 'table',
 };
 
 describe('GitHubClient', () => {

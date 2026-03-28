@@ -6,7 +6,6 @@ import { ReadStatusMap } from "./formatter.js";
 export interface InteractiveListOptions {
   owner: string;
   repo: string;
-  format: "table" | "json" | "simple";
   readStatus: ReadStatusMap;
   onMarkAsRead: (issueNumber: number) => void;
 }

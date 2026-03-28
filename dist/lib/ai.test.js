@@ -144,40 +144,5 @@ describe('AISummarizer', () => {
             expect(categories['Other']).toHaveLength(1);
         });
     });
-    describe('summarizeIssueChinese', () => {
-        it('should generate Chinese summary', async () => {
-            const mockResponse = {
-                choices: [
-                    {
-                        message: {
-                            content: '这是一个测试摘要，描述了一个重要的bug问题需要尽快修复。',
-                        },
-                    },
-                ],
-            };
-            global.fetch = vi.fn().mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve(mockResponse),
-            });
-            const summarizer = new AISummarizer(mockAIConfig);
-            const summary = await summarizer.summarizeIssueChinese(mockIssue);
-            expect(summary).toContain('测试摘要');
-            expect(summary.length).toBeLessThanOrEqual(100);
-        });
-        it('should truncate long summaries', async () => {
-            const longSummary = '这是一个很长的摘要'.repeat(20);
-            const mockResponse = {
-                choices: [{ message: { content: longSummary } }],
-            };
-            global.fetch = vi.fn().mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve(mockResponse),
-            });
-            const summarizer = new AISummarizer(mockAIConfig);
-            const summary = await summarizer.summarizeIssueChinese(mockIssue);
-            expect(summary.length).toBeLessThanOrEqual(100);
-            expect(summary.endsWith('...')).toBe(true);
-        });
-    });
 });
 //# sourceMappingURL=ai.test.js.map

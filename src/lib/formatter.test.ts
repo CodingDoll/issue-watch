@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatIssues, formatIssueDetail, OutputFormat } from './formatter.js';
+import { formatIssues } from './formatter.js';
 import type { Issue } from './github.js';
 
 // Mock issue data for testing
@@ -33,16 +33,8 @@ const mockIssues: Issue[] = [
 ];
 
 describe('formatIssues', () => {
-  it('should format issues as JSON', () => {
-    const result = formatIssues(mockIssues, 'json' as OutputFormat);
-    const parsed = JSON.parse(result);
-    expect(parsed).toHaveLength(2);
-    expect(parsed[0].number).toBe(1);
-    expect(parsed[1].number).toBe(2);
-  });
-
   it('should format issues as simple format', () => {
-    const result = formatIssues(mockIssues, 'simple' as OutputFormat);
+    const result = formatIssues(mockIssues);
     const lines = result.split('\n');
     // Format now has 3 lines: issue 1, blank line, issue 2
     expect(lines.length).toBeGreaterThanOrEqual(2);
@@ -55,49 +47,8 @@ describe('formatIssues', () => {
     expect(lineWithIssue2).toContain('●'); // closed state icon
   });
 
-  it('should format issues as table (default)', () => {
-    const result = formatIssues(mockIssues, 'table' as OutputFormat, 'test/repo');
-    expect(result).toContain('Issues for test/repo');
-    expect(result).toContain('#1');
-    expect(result).toContain('First issue');
-    expect(result).toContain('bug');
-  });
-
   it('should handle empty issues array', () => {
-    const result = formatIssues([], 'json' as OutputFormat);
-    expect(result).toBe('[]');
-  });
-});
-
-describe('formatIssueDetail', () => {
-  it('should format a single issue detail', () => {
-    const result = formatIssueDetail(mockIssues[0]);
-    expect(result).toContain('Issue #1');
-    expect(result).toContain('First issue');
-    expect(result).toContain('open');
-    expect(result).toContain('user1');
-    expect(result).toContain('This is the first issue');
-    expect(result).toContain('https://github.com/test/repo/issues/1');
-  });
-
-  it('should format closed issue correctly', () => {
-    const result = formatIssueDetail(mockIssues[1]);
-    expect(result).toContain('closed');
-    expect(result).toContain('feature');
-    expect(result).toContain('help wanted');
-  });
-
-  it('should handle issue with no body', () => {
-    const issueWithoutBody = { ...mockIssues[0], body: null };
-    const result = formatIssueDetail(issueWithoutBody);
-    expect(result).toContain('Issue #1');
-    expect(result).not.toContain('Description');
-  });
-
-  it('should handle issue with no labels', () => {
-    const issueWithoutLabels = { ...mockIssues[0], labels: [] };
-    const result = formatIssueDetail(issueWithoutLabels);
-    expect(result).toContain('Issue #1');
-    expect(result).not.toContain('Labels');
+    const result = formatIssues([]);
+    expect(result).toBe('');
   });
 });

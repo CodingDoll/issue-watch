@@ -13,7 +13,6 @@ export interface LastCommandArgs {
     repo?: string;
     state?: string;
     limit?: number;
-    format?: string;
     labels?: string;
     timestamp: string;
 }
